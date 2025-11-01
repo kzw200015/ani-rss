@@ -9,6 +9,10 @@
 name: maven
 
 on:
+  workflow_call:
+  push:
+    branches:
+      - master
   workflow_dispatch:
 jobs:
   build:
@@ -35,6 +39,7 @@ jobs:
 
           echo "version=v$version" >> $GITHUB_ENV
       - name: Release
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ env.version }}
@@ -66,7 +71,7 @@ jobs:
           file: ./docker/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: wushuo894/ani-rss:latest,wushuo894/ani-rss:${{ env.version }}
+          tags: kzw200015/ani-rss:latest,kzw200015/ani-rss:${{ env.version }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -74,7 +79,7 @@ jobs:
           file: ./docker/Dockerfile-openj9
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: wushuo894/ani-rss:openj9,wushuo894/ani-rss:${{ env.version }}-openj9
+          tags: kzw200015/ani-rss:openj9,kzw200015/ani-rss:${{ env.version }}-openj9
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -82,4 +87,4 @@ jobs:
           file: ./docker/Dockerfile-arm32v7
           platforms: linux/arm/v7
           push: true
-          tags: wushuo894/ani-rss:arm32v7,wushuo894/ani-rss:${{ env.version }}-arm32v7
+          tags: kzw200015/ani-rss:arm32v7,kzw200015/ani-rss:${{ env.version }}-arm32v7
